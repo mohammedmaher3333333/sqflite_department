@@ -58,16 +58,36 @@ class MySqFLiteDatabase extends CRUD {
     throw UnimplementedError();
   }
 
-  @override
-  Future<bool> insert() async {
-    // TODO: implement insert
-    await _initDatabase();
-    int inserted = await _db!.insert(
-      _userTable,
-      {
-        _userColumnName: "Mohammed",
+  insertToProductTable({
+    required String nameProduct,
+    required double priceProduct,
+    required int countProduct,
+  }) {
+    insert(
+      tableName: _productTable,
+      values: {
+        _productColumnName: nameProduct,
+        _productColumnPrice: priceProduct,
+        _productColumnCount: countProduct,
       },
     );
+  }
+
+  Future<bool> insertToUserTable({required String userName}) {
+    return insert(
+      tableName: _userTable,
+      values: {
+        _userColumnName: userName,
+      },
+    );
+  }
+
+  @override
+  Future<bool> insert(
+      {required String tableName, required Map<String, Object?> values}) async {
+    // TODO: implement insert
+    await _initDatabase();
+    int inserted = await _db!.insert(tableName, values);
     _db!.close();
     return inserted > 0 ? true : false;
     throw UnimplementedError();
@@ -84,12 +104,11 @@ class MySqFLiteDatabase extends CRUD {
     // TODO: implement update
     await _initDatabase();
     int updated = await _db!.update(
-      _userTable,
-      {
-        _userColumnName: "Ahmed",
-      },
-      where: "$_userColumnID == 1"
-    );
+        _userTable,
+        {
+          _userColumnName: "Ahmed",
+        },
+        where: "$_userColumnID == 1");
     _db!.close();
     return updated > 0 ? true : false;
     throw UnimplementedError();
