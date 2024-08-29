@@ -19,7 +19,7 @@ class MySqFLiteDatabase extends CRUD {
   String _salesColumnUserName = "sales_user_name";
   Database? _db;
 
-  Future<Database> initDatabase() async {
+  Future<Database> _initDatabase() async {
     String databasesPath = await sqFLiteDatabase.getDatabasesPath();
     String realDatabasesPath = join(databasesPath, 'management.db');
     // open the database
@@ -35,57 +35,63 @@ class MySqFLiteDatabase extends CRUD {
   _onCreate(Database db, int version) async {
     // When creating the db, create the table
     await db.execute(
-      'CREATE TABLE IF NOT EXISTS $_userTable ('
-      '$_userColumnID INTEGER PRIMARY KEY AUTOINCREMENT,'
-      ' $_userColumnName TEXT,'
-      ');',
+      'CREATE TABLE IF NOT EXISTS $_userTable ($_userColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_userColumnName TEXT)',
     );
     await db.execute(
-      'CREATE TABLE IF NOT EXISTS $_productTable ('
-      '$_productColumnID INTEGER PRIMARY KEY AUTOINCREMENT,'
-      '$_productColumnName TEXT,'
-      ' $_productColumnPrice REAL,'
-      ' $_productColumnCount INTEGER,'
-      ');',
+      'CREATE TABLE IF NOT EXISTS $_productTable ($_productColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_productColumnName TEXT, $_productColumnPrice REAL, $_productColumnCount INTEGER);',
     );
     await db.execute(
-      'CREATE TABLE IF NOT EXISTS $_salesTable ('
-      '$_salesColumnID INTEGER PRIMARY KEY AUTOINCREMENT,'
-      ' $_salesColumnProductName TEXT,'
-      ' $_salesColumnUserName TEXT,'
-      ');',
+      'CREATE TABLE IF NOT EXISTS $_salesTable ($_salesColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_salesColumnProductName TEXT, $_salesColumnUserName TEXT);',
     );
   }
 
   @override
-  Future<int> delete() async {
+  Future<bool> delete() async {
     // TODO: implement delete
+    await _initDatabase();
+    int deleted = await _db!.delete(
+      _userTable,
+      where: "$_userColumnID==1",
+    );
+    _db!.close();
+    return deleted > 0 ? true : false;
     throw UnimplementedError();
   }
 
   @override
-  Future<int> insert() async {
+  Future<bool> insert() async {
     // TODO: implement insert
-    await initDatabase();
+    await _initDatabase();
     int inserted = await _db!.insert(
       _userTable,
       {
         _userColumnName: "Mohammed",
       },
     );
-    return inserted;
+    _db!.close();
+    return inserted > 0 ? true : false;
     throw UnimplementedError();
   }
 
   @override
-  Future<int> select() async {
+  Future<bool> select() async {
     // TODO: implement select
     throw UnimplementedError();
   }
 
   @override
-  Future<int> update() async {
+  Future<bool> update() async {
     // TODO: implement update
+    await _initDatabase();
+    int updated = await _db!.update(
+      _userTable,
+      {
+        _userColumnName: "Ahmed",
+      },
+      where: "$_userColumnID == 1"
+    );
+    _db!.close();
+    return updated > 0 ? true : false;
     throw UnimplementedError();
   }
 }
