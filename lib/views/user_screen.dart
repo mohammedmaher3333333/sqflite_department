@@ -43,7 +43,8 @@ class _UserScreenState extends State<UserScreen> {
               onPressed: () async {
                 setState(() {
                   _userController.selectDataFromUserTable();
-                  _userController.insertUser(userName: _userNameController.text);
+                  _userController.insertUser(
+                      userName: _userNameController.text);
                 });
                 _userNameController.clear();
               },
@@ -51,13 +52,13 @@ class _UserScreenState extends State<UserScreen> {
             ),
             Expanded(
               child: ListView.separated(
-                itemBuilder: (context, index) =>
-                    Row(
-                      children: [
-                        Text(_userController.dataUser[index]['user_id'].toString()),
-                        Text(_userController.dataUser[index]['user_name'].toString()),
-                      ],
-                    ),
+                itemBuilder: (context, index) => Row(
+                  children: [
+                    Text(_userController.dataUser[index]['user_id'].toString()),
+                    Text(_userController.dataUser[index]['user_name']
+                        .toString()),
+                  ],
+                ),
                 separatorBuilder: (context, index) => const SizedBox(
                   height: 20,
                 ),

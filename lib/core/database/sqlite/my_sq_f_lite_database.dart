@@ -46,6 +46,7 @@ class MySqFLiteDatabase extends CRUD {
   }
 
 //////////////////////////////////////   inserts
+  // main function insert
   @override
   Future<bool> insert(
       {required String tableName, required Map<String, Object?> values}) async {
@@ -57,6 +58,7 @@ class MySqFLiteDatabase extends CRUD {
     throw UnimplementedError();
   }
 
+  // insert To Product Table
   insertToProductTable({
     required String nameProduct,
     required double priceProduct,
@@ -72,6 +74,7 @@ class MySqFLiteDatabase extends CRUD {
     );
   }
 
+  //insert To User Table
   Future<bool> insertToUserTable({required String userName}) {
     return insert(
       tableName: _userTable,
@@ -83,14 +86,30 @@ class MySqFLiteDatabase extends CRUD {
 
 
 /////////////////////////////////////////////// selects
+
+  // main function select
   @override
-  Future<List<Map<String, Object?>>> select() async {
+  Future<List<Map<String, Object?>>> select({required String tableName,}) async {
     // TODO: implement select
     await _initDatabase();
     List<Map<String, Object?>> selectedData =
-        await _db!.query(_userTable);
+        await _db!.query(tableName);
     _db!.close();
     return selectedData;
+    throw UnimplementedError();
+  }
+
+  // select from user table
+  Future<List<Map<String, Object?>>> selectFromUserTable() async {
+    // TODO: implement select
+    return select(tableName: _userTable);
+    throw UnimplementedError();
+  }
+
+  // select from user table
+  Future<List<Map<String, Object?>>> selectFromProductTable() async {
+    // TODO: implement select
+    return select(tableName: _productTable);
     throw UnimplementedError();
   }
 

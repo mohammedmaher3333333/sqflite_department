@@ -14,7 +14,7 @@ class UserController{
 
   void selectDataFromUserTable() async {
     MySqFLiteDatabase db = MySqFLiteDatabase();
-    dataUser = await db.select();
+    dataUser = await db.selectFromUserTable();
 
   }
 }
