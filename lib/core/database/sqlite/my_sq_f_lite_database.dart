@@ -45,16 +45,15 @@ class MySqFLiteDatabase extends CRUD {
     );
   }
 
+//////////////////////////////////////   inserts
   @override
-  Future<bool> delete() async {
-    // TODO: implement delete
+  Future<bool> insert(
+      {required String tableName, required Map<String, Object?> values}) async {
+    // TODO: implement insert
     await _initDatabase();
-    int deleted = await _db!.delete(
-      _userTable,
-      where: "$_userColumnID==1",
-    );
+    int inserted = await _db!.insert(tableName, values);
     _db!.close();
-    return deleted > 0 ? true : false;
+    return inserted > 0 ? true : false;
     throw UnimplementedError();
   }
 
@@ -82,20 +81,16 @@ class MySqFLiteDatabase extends CRUD {
     );
   }
 
-  @override
-  Future<bool> insert(
-      {required String tableName, required Map<String, Object?> values}) async {
-    // TODO: implement insert
-    await _initDatabase();
-    int inserted = await _db!.insert(tableName, values);
-    _db!.close();
-    return inserted > 0 ? true : false;
-    throw UnimplementedError();
-  }
 
+/////////////////////////////////////////////// selects
   @override
-  Future<bool> select() async {
+  Future<List<Map<String, Object?>>> select() async {
     // TODO: implement select
+    await _initDatabase();
+    List<Map<String, Object?>> selectedData =
+        await _db!.query(_userTable);
+    _db!.close();
+    return selectedData;
     throw UnimplementedError();
   }
 
@@ -111,6 +106,19 @@ class MySqFLiteDatabase extends CRUD {
         where: "$_userColumnID == 1");
     _db!.close();
     return updated > 0 ? true : false;
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> delete() async {
+    // TODO: implement delete
+    await _initDatabase();
+    int deleted = await _db!.delete(
+      _userTable,
+      where: "$_userColumnID==1",
+    );
+    _db!.close();
+    return deleted > 0 ? true : false;
     throw UnimplementedError();
   }
 }

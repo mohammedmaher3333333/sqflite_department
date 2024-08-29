@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite_department/core/database/sqlite/my_sq_f_lite_database.dart';
+import 'package:sqflite_department/app/controller/user_controller.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -10,6 +10,14 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
   final TextEditingController _userNameController = TextEditingController();
+  late UserController _userController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _userController = UserController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +40,29 @@ class _UserScreenState extends State<UserScreen> {
               ),
             ),
             ElevatedButton(
-              onPressed: () async{
-                MySqFLiteDatabase db=MySqFLiteDatabase();
-                bool inserted=await db.insertToUserTable(userName: _userNameController.text);
-                print(inserted);
+              onPressed: () async {
+                setState(() {
+                  _userController.selectDataFromUserTable();
+                  _userController.insertUser(userName: _userNameController.text);
+                });
                 _userNameController.clear();
-
               },
               child: const Text("insert"),
+            ),
+            Expanded(
+              child: ListView.separated(
+                itemBuilder: (context, index) =>
+                    Row(
+                      children: [
+                        Text(_userController.dataUser[index]['user_id'].toString()),
+                        Text(_userController.dataUser[index]['user_name'].toString()),
+                      ],
+                    ),
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 20,
+                ),
+                itemCount: _userController.dataUser.length,
+              ),
             ),
           ],
         ),
