@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_department/app/controller/user_controller.dart';
 
-class UserScreen extends StatefulWidget {
-  const UserScreen({super.key});
+class SalesScreen extends StatefulWidget {
+  const SalesScreen({super.key});
 
   @override
-  State<UserScreen> createState() => _UserScreenState();
+  State<SalesScreen> createState() => _SalesScreenState();
 }
 
-class _UserScreenState extends State<UserScreen> {
+class _SalesScreenState extends State<SalesScreen> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _userNameEditController = TextEditingController();
   late UserController _userController;
@@ -26,7 +26,7 @@ class _UserScreenState extends State<UserScreen> {
       appBar: AppBar(
         backgroundColor: Colors.orange,
         centerTitle: true,
-        title: const Text("User Screen"),
+        title: const Text("sales Screen"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -59,7 +59,7 @@ class _UserScreenState extends State<UserScreen> {
                   onTap: () {
                     int id = _userController.dataUser[index]['user_id'];
                     _userNameEditController.text =
-                        _userController.dataUser[index]['user_name'];
+                    _userController.dataUser[index]['user_name'];
                     showModalBottomSheet(
                       context: context,
                       builder: (context) => Container(

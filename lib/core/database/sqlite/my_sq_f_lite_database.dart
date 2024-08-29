@@ -45,7 +45,7 @@ class MySqFLiteDatabase extends CRUD {
     );
   }
 
-//////////////////////////////////////   inserts
+  //////////////////////////////////////   inserts
   // main function insert
   @override
   Future<bool> insert(
@@ -84,16 +84,16 @@ class MySqFLiteDatabase extends CRUD {
     );
   }
 
-
-/////////////////////////////////////////////// selects
+  /////////////////////////////////////////////// selects
 
   // main function select
   @override
-  Future<List<Map<String, Object?>>> select({required String tableName,}) async {
+  Future<List<Map<String, Object?>>> select({
+    required String tableName,
+  }) async {
     // TODO: implement select
     await _initDatabase();
-    List<Map<String, Object?>> selectedData =
-        await _db!.query(tableName);
+    List<Map<String, Object?>> selectedData = await _db!.query(tableName);
     _db!.close();
     return selectedData;
     throw UnimplementedError();
@@ -113,31 +113,66 @@ class MySqFLiteDatabase extends CRUD {
     throw UnimplementedError();
   }
 
+  /////////////////////////////////////////////////  updates
+
+  // main update
   @override
-  Future<bool> update() async {
+  Future<bool> update({
+    required String tableName,
+    required String where,
+    required Map<String, Object?> values,
+  }) async {
     // TODO: implement update
     await _initDatabase();
     int updated = await _db!.update(
-        _userTable,
-        {
-          _userColumnName: "Ahmed",
-        },
-        where: "$_userColumnID == 1");
+      tableName,
+      values,
+      where: where,
+    );
     _db!.close();
     return updated > 0 ? true : false;
     throw UnimplementedError();
   }
 
+  // update User Table
+  Future<bool> updateUserTable({required int id, required String userName}) {
+    return update(
+        tableName: _userTable,
+        where: "$_userColumnID ==$id",
+        values: {_userColumnName: userName});
+  }
+
+  // update User Table
+  Future<bool> updateProductTable({
+    required int id,
+    required String productName,
+  }) {
+    return update(
+        tableName: _userTable,
+        where: "$_productColumnID ==$id",
+        values: {_productColumnName: productName});
+  }
+
+  ///////////////////////////////////////////////////// deletes
+
+  // main delete
   @override
-  Future<bool> delete() async {
+  Future<bool> delete(
+      {required String tableName, required String where}) async {
     // TODO: implement delete
     await _initDatabase();
     int deleted = await _db!.delete(
-      _userTable,
-      where: "$_userColumnID==1",
+      tableName,
+      where: where,
     );
     _db!.close();
     return deleted > 0 ? true : false;
     throw UnimplementedError();
+  }
+
+  // delete from user table
+  Future<bool> deleteFromUserTable(
+      {required int id}) async {
+    return delete(tableName: _userTable, where: "$_userColumnID == $id");
   }
 }

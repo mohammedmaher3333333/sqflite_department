@@ -4,9 +4,16 @@ abstract class CRUD {
     required Map<String, Object?> values,
   });
 
-  Future<bool> update();
+  Future<bool> update({
+    required String tableName,
+    required String where,
+    required Map<String, Object?> values,
+  });
 
-  Future<bool> delete();
+  Future<bool> delete({
+    required String tableName,
+    required String where,
+  });
 
   Future<List<Map<String, Object?>>> select({
     required String tableName,
