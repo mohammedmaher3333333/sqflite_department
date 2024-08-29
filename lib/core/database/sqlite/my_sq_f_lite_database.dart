@@ -1,26 +1,25 @@
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite_department/core/database/sqlite/crud.dart';
-import 'package:sqflite/sqflite.dart' as sqFLiteDatabase;
+import 'package:sqflite/sqflite.dart' as mySqfLiteDatabase;
 import 'package:path/path.dart';
 
 class MySqFLiteDatabase extends CRUD {
-  String _userTable = "user";
-  String _userColumnID = "user_id";
-  String _userColumnName = "user_name";
-  String _productTable = "product";
-  String _productColumnID = "product_id";
-  String _productColumnName = "product_name";
-  String _productColumnPrice = "product_price";
-  String _productColumnCount = "product_count";
-  String _salesTable = "sales";
-  String _salesColumnID = "sales_id";
-  String _salesColumnProductName = "sales_product_name";
-  String _salesColumnUserName = "sales_user_name";
+  final String _userTable = "user";
+  final String _userColumnID = "user_id";
+  final String _userColumnName = "user_name";
+  final String _productTable = "product";
+  final String _productColumnID = "product_id";
+  final String _productColumnName = "product_name";
+  final String _productColumnPrice = "product_price";
+  final String _productColumnCount = "product_count";
+  final String _salesTable = "sales";
+  final String _salesColumnID = "sales_id";
+  final String _salesColumnProductName = "sales_product_name";
+  final String _salesColumnUserName = "sales_user_name";
   Database? _db;
 
   Future<Database> _initDatabase() async {
-    String databasesPath = await sqFLiteDatabase.getDatabasesPath();
+    String databasesPath = await mySqfLiteDatabase.getDatabasesPath();
     String realDatabasesPath = join(databasesPath, 'management.db');
     // open the database
     int versionDatabase = 1;
@@ -50,12 +49,10 @@ class MySqFLiteDatabase extends CRUD {
   @override
   Future<bool> insert(
       {required String tableName, required Map<String, Object?> values}) async {
-    // TODO: implement insert
     await _initDatabase();
     int inserted = await _db!.insert(tableName, values);
     _db!.close();
     return inserted > 0 ? true : false;
-    throw UnimplementedError();
   }
 
   // insert To Product Table
@@ -91,26 +88,20 @@ class MySqFLiteDatabase extends CRUD {
   Future<List<Map<String, Object?>>> select({
     required String tableName,
   }) async {
-    // TODO: implement select
     await _initDatabase();
     List<Map<String, Object?>> selectedData = await _db!.query(tableName);
     _db!.close();
     return selectedData;
-    throw UnimplementedError();
   }
 
   // select from user table
   Future<List<Map<String, Object?>>> selectFromUserTable() async {
-    // TODO: implement select
     return select(tableName: _userTable);
-    throw UnimplementedError();
   }
 
   // select from user table
   Future<List<Map<String, Object?>>> selectFromProductTable() async {
-    // TODO: implement select
     return select(tableName: _productTable);
-    throw UnimplementedError();
   }
 
   /////////////////////////////////////////////////  updates
@@ -122,7 +113,6 @@ class MySqFLiteDatabase extends CRUD {
     required String where,
     required Map<String, Object?> values,
   }) async {
-    // TODO: implement update
     await _initDatabase();
     int updated = await _db!.update(
       tableName,
@@ -131,7 +121,6 @@ class MySqFLiteDatabase extends CRUD {
     );
     _db!.close();
     return updated > 0 ? true : false;
-    throw UnimplementedError();
   }
 
   // update User Table
@@ -142,15 +131,21 @@ class MySqFLiteDatabase extends CRUD {
         values: {_userColumnName: userName});
   }
 
-  // update User Table
+  // update product Table
   Future<bool> updateProductTable({
     required int id,
     required String productName,
+    required double productPrice,
+    required int productCount,
   }) {
     return update(
-        tableName: _userTable,
+        tableName: _productTable,
         where: "$_productColumnID ==$id",
-        values: {_productColumnName: productName});
+        values: {
+          _productColumnName: productName,
+          _productColumnPrice: productPrice,
+          _productColumnCount: productCount,
+        });
   }
 
   ///////////////////////////////////////////////////// deletes
@@ -159,7 +154,6 @@ class MySqFLiteDatabase extends CRUD {
   @override
   Future<bool> delete(
       {required String tableName, required String where}) async {
-    // TODO: implement delete
     await _initDatabase();
     int deleted = await _db!.delete(
       tableName,
@@ -167,12 +161,15 @@ class MySqFLiteDatabase extends CRUD {
     );
     _db!.close();
     return deleted > 0 ? true : false;
-    throw UnimplementedError();
   }
 
   // delete from user table
-  Future<bool> deleteFromUserTable(
-      {required int id}) async {
+  Future<bool> deleteFromUserTable({required int id}) async {
     return delete(tableName: _userTable, where: "$_userColumnID == $id");
+  }
+
+  // delete from product table
+  Future<bool> deleteFromProductTable({required int id}) async {
+    return delete(tableName: _productTable, where: "$_productColumnID == $id");
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite_department/app/controller/user_controller.dart';
+import 'package:sqflite_department/app/controller/product_controller.dart';
 
 class ProductScreen extends StatefulWidget {
   const ProductScreen({super.key});
@@ -9,15 +9,36 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
-  final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _userNameEditController = TextEditingController();
-  late UserController _userController;
+  final TextEditingController _productNameController = TextEditingController();
+  final TextEditingController _productPriceController = TextEditingController();
+  final TextEditingController _productCountController = TextEditingController();
+
+  // editing
+  final TextEditingController _productEditNameController =
+      TextEditingController();
+  final TextEditingController _productEditPriceController =
+      TextEditingController();
+  final TextEditingController _productEditCountController =
+      TextEditingController();
+  late ProductController _productController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _userController = UserController();
+    _productController = ProductController();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _productPriceController.dispose();
+    _productNameController.dispose();
+    _productCountController.dispose();
+    _productEditCountController.dispose();
+    _productEditPriceController.dispose();
+    _productEditNameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -34,16 +55,45 @@ class _ProductScreenState extends State<ProductScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-              controller: _userNameController,
+              controller: _productNameController,
+              keyboardType: TextInputType.text,
               decoration: const InputDecoration(
-                label: Text("user name"),
+                label: Text("product name"),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: _productPriceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                label: Text("product price"),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            TextFormField(
+              controller: _productCountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                label: Text("product count"),
                 border: OutlineInputBorder(),
               ),
             ),
             ElevatedButton(
               onPressed: () async {
-                _userController.insertUser(userName: _userNameController.text);
-                _userNameController.clear();
+                _productController.insertProduct(
+                  productName: _productNameController.text,
+                  productPrice: double.parse(_productPriceController.text),
+                  productCount: int.parse(_productCountController.text),
+                );
+                _productNameController.clear();
+                _productPriceController.clear();
+                _productCountController.clear();
               },
               child: const Text("insert"),
             ),
@@ -57,9 +107,16 @@ class _ProductScreenState extends State<ProductScreen> {
               child: ListView.separated(
                 itemBuilder: (context, index) => InkWell(
                   onTap: () {
-                    int id = _userController.dataUser[index]['user_id'];
-                    _userNameEditController.text =
-                    _userController.dataUser[index]['user_name'];
+                    int id =
+                        _productController.dataProduct[index]['product_id'];
+                    _productEditNameController.text =
+                        _productController.dataProduct[index]['product_name'];
+                    _productEditPriceController.text = _productController
+                        .dataProduct[index]['product_price']
+                        .toString();
+                    _productEditCountController.text = _productController
+                        .dataProduct[index]['product_count']
+                        .toString();
                     showModalBottomSheet(
                       context: context,
                       builder: (context) => Container(
@@ -67,9 +124,28 @@ class _ProductScreenState extends State<ProductScreen> {
                         child: Column(
                           children: [
                             TextFormField(
-                              controller: _userNameEditController,
+                              controller: _productEditNameController,
+                              keyboardType: TextInputType.text,
                               decoration: const InputDecoration(
-                                label: Text("user name"),
+                                label: Text("product name"),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: _productEditPriceController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                label: Text("product price"),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: _productEditCountController,
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(
+                                label: Text("product count"),
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -77,8 +153,15 @@ class _ProductScreenState extends State<ProductScreen> {
                               children: [
                                 ElevatedButton(
                                   onPressed: () async {
-                                    _userController.updateUser(
-                                        userName: _userNameEditController.text, id: id);
+                                    _productController.updateProduct(
+                                      productName:
+                                          _productEditNameController.text,
+                                      id: id,
+                                      productPrice: double.parse(
+                                          _productEditPriceController.text),
+                                      productCount: int.parse(
+                                          _productEditCountController.text),
+                                    );
                                     setState(() {});
                                     Navigator.pop(context);
                                   },
@@ -86,7 +169,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
-                                    _userController.deleteUser(id: id);
+                                    _productController.deleteProduct(id: id);
                                     Navigator.pop(context);
                                   },
                                   child: const Text("delete"),
@@ -100,9 +183,14 @@ class _ProductScreenState extends State<ProductScreen> {
                   },
                   child: Row(
                     children: [
-                      Text(_userController.dataUser[index]['user_id']
+                      Text(
+                          "id.${_productController.dataProduct[index]['product_id']}  "),
+                      Text(_productController.dataProduct[index]['product_name']
                           .toString()),
-                      Text(_userController.dataUser[index]['user_name']
+                      Text(
+                          "   ${_productController.dataProduct[index]['product_price']}   "),
+                      Text(_productController.dataProduct[index]
+                              ['product_count']
                           .toString()),
                     ],
                   ),
@@ -110,7 +198,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 separatorBuilder: (context, index) => const SizedBox(
                   height: 20,
                 ),
-                itemCount: _userController.dataUser.length,
+                itemCount: _productController.dataProduct.length,
               ),
             ),
           ],
