@@ -5,7 +5,9 @@ class SalesController {
   int? valueButtonUsers;
 
   List dataProducts = [];
-  int valueButtonProducts = 0;
+  int? valueButtonProducts;
+
+  List dataSales = [];
 
   SalesController() {
     initialSelect();
@@ -13,9 +15,11 @@ class SalesController {
 
   void initialSelect() async {
     await selectUsers();
-    valueButtonUsers = dataUsers[0]["user_id"];
+    if (dataUsers.isNotEmpty) valueButtonUsers = dataUsers[0]["user_id"];
     await selectProducts();
-    valueButtonProducts = dataProducts[0]["product_id"];
+    if (dataProducts.isNotEmpty) {
+      valueButtonProducts = dataProducts[0]["product_id"];
+    }
   }
 
   Future<void> selectUsers() async {
@@ -28,23 +32,20 @@ class SalesController {
     dataProducts = await db.selectFromProductTable();
   }
 
-  Future<void> insertToSalesTable() async {
-    String userName = "";
-    String productName = "";
-    if (valueButtonUsers != null) {
-      for (int i = 0; i < dataUsers.length; i++) {
-        if (dataUsers[i]['user_id'] == valueButtonUsers) {
-          userName = dataUsers[i]['user_name'];
-        }
-      }
-      // product data
-      for (int i = 0; i < dataProducts.length; i++) {
-        if (dataProducts[i]['product_id'] == valueButtonProducts) {
-          productName = dataProducts[i]['product_name'];
-        }
-      }
-    }
+  Future<void> selectSales() async {
     MySqFLiteDatabase db = MySqFLiteDatabase();
-    await db.insertToSalesTable(userName: userName, productName: productName);
+    // dataSales = await db.selectFromSalesTable();
+    dataSales = await db.selectFromSalesTable();
+    print(dataSales);
+  }
+
+  Future<void> insertToSalesTable() async {
+    if (valueButtonUsers != null && valueButtonProducts != null) {
+      MySqFLiteDatabase db = MySqFLiteDatabase();
+      await db.insertToSalesTable(
+        userID: valueButtonUsers!,
+        productID: valueButtonProducts!,
+      );
+    }
   }
 }

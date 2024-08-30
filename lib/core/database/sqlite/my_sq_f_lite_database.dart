@@ -14,19 +14,32 @@ class MySqFLiteDatabase extends CRUD {
   final String _productColumnCount = "product_count";
   final String _salesTable = "sales";
   final String _salesColumnID = "sales_id";
-  final String _salesColumnProductName = "sales_product_name";
-  final String _salesColumnUserName = "sales_user_name";
+  final String _salesColumnProductID = "sales_product_ID";
+  final String _salesColumnUserID = "sales_user_ID";
   Database? _db;
 
   Future<Database> _initDatabase() async {
     String databasesPath = await mySqfLiteDatabase.getDatabasesPath();
     String realDatabasesPath = join(databasesPath, 'management.db');
+
+    // // Check if the database already exists.
+    // bool isExists = await mySqfLiteDatabase.databaseExists(realDatabasesPath);
+    // // If the database exists, delete it.
+    // if (isExists == true) {
+    //   mySqfLiteDatabase.deleteDatabase(realDatabasesPath);
+    // }
+
     // open the database
-    int versionDatabase = 1;
-    _db ??= await openDatabase(
+    int versionDatabase = 3;
+    _db ??= await mySqfLiteDatabase.openDatabase(
       realDatabasesPath,
       version: versionDatabase,
       onCreate: _onCreate,
+      onUpgrade: (db, oldVersion, newVersion) {
+        print(db);
+        print(oldVersion);
+        print(newVersion);
+      },
     );
     return _db!;
   }
@@ -40,7 +53,7 @@ class MySqFLiteDatabase extends CRUD {
       'CREATE TABLE IF NOT EXISTS $_productTable ($_productColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_productColumnName TEXT, $_productColumnPrice REAL, $_productColumnCount INTEGER);',
     );
     await db.execute(
-      'CREATE TABLE IF NOT EXISTS $_salesTable ($_salesColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_salesColumnProductName TEXT, $_salesColumnUserName TEXT);',
+      'CREATE TABLE IF NOT EXISTS $_salesTable ($_salesColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_salesColumnProductID INTEGER, $_salesColumnUserID INTEGER);',
     );
   }
 
@@ -83,12 +96,12 @@ class MySqFLiteDatabase extends CRUD {
 
   //insert To sales Table
   Future<bool> insertToSalesTable(
-      {required String userName, required String productName}) {
+      {required int userID, required int productID}) {
     return insert(
       tableName: _salesTable,
       values: {
-        _salesColumnUserName:userName,
-        _salesColumnProductName:productName,
+        _salesColumnUserID: userID,
+        _salesColumnProductID: productID,
       },
     );
   }
@@ -102,6 +115,15 @@ class MySqFLiteDatabase extends CRUD {
   }) async {
     await _initDatabase();
     List<Map<String, Object?>> selectedData = await _db!.query(tableName);
+    _db!.close();
+    return selectedData;
+  }
+
+  // select from user table
+  Future<List<Map<String, Object?>>> selectFromSalesTable() async {
+    await _initDatabase();
+    List<Map<String, Object?>> selectedData = await _db!.rawQuery(
+        "SELECT $_salesTable.$_salesColumnID,$_productTable.$_productColumnName,$_userTable.$_userColumnName FROM $_salesTable,$_userTable,$_productTable WHERE $_salesTable.$_salesColumnUserID = $_userTable.$_userColumnID AND $_salesTable.$_salesColumnProductID = $_productTable.$_productColumnID");
     _db!.close();
     return selectedData;
   }
