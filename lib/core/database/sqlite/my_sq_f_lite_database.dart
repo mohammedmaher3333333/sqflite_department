@@ -30,16 +30,15 @@ class MySqFLiteDatabase extends CRUD {
     // }
 
     // open the database
-    int versionDatabase = 3;
+    int versionDatabase = 4;
     _db ??= await mySqfLiteDatabase.openDatabase(
       realDatabasesPath,
       version: versionDatabase,
-      onCreate: _onCreate,
-      onUpgrade: (db, oldVersion, newVersion) {
-        print(db);
-        print(oldVersion);
-        print(newVersion);
+      onOpen: (db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
       },
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
     return _db!;
   }
@@ -53,8 +52,17 @@ class MySqFLiteDatabase extends CRUD {
       'CREATE TABLE IF NOT EXISTS $_productTable ($_productColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_productColumnName TEXT, $_productColumnPrice REAL, $_productColumnCount INTEGER);',
     );
     await db.execute(
-      'CREATE TABLE IF NOT EXISTS $_salesTable ($_salesColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_salesColumnProductID INTEGER, $_salesColumnUserID INTEGER);',
+      'CREATE TABLE IF NOT EXISTS $_salesTable ($_salesColumnID INTEGER PRIMARY KEY AUTOINCREMENT, $_salesColumnProductID INTEGER, $_salesColumnUserID INTEGER, CONSTRAINT product_sales_relation FOREIGN KEY ($_salesColumnProductID) REFERENCES $_productTable ($_productColumnID) ON DELETE CASCADE ON UPDATE CASCADE , CONSTRAINT user_sales_relation FOREIGN KEY ($_salesColumnUserID) REFERENCES $_userTable ($_userColumnID) ON DELETE CASCADE ON UPDATE CASCADE , );',
     );
+  }
+
+  _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    print(db);
+    print(oldVersion);
+    print(newVersion);
+    // edit in table create or rename or add and more in alter table
+    // await db.execute('CREATE TABLE IF NOT EXISTS testTable (id INTEGER)',);
+    // await db.execute('ALTER TABLE testTable RENAME TO testTable2');
   }
 
   //////////////////////////////////////   inserts
