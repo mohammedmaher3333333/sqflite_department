@@ -7,19 +7,23 @@ class SalesController {
   int valueButtonProducts = 0;
 
   SalesController() {
-    selectUsers();
-    selectProducts();
+    initialSelect();
+  }
+  void initialSelect() async {
+
+    await selectUsers();
+    valueButtonUsers = dataUsers[0]["user_id"];
+    await selectProducts();
+    valueButtonProducts = dataProducts[0]["product_id"];
   }
 
   Future<void> selectUsers() async {
     MySqFLiteDatabase db = MySqFLiteDatabase();
     dataUsers = await db.selectFromUserTable();
-    valueButtonUsers = dataUsers[0]["user_id"];
   }
 
   Future<void> selectProducts() async {
     MySqFLiteDatabase db = MySqFLiteDatabase();
     dataProducts = await db.selectFromProductTable();
-    valueButtonProducts = dataProducts[0]["product_id"];
   }
 }

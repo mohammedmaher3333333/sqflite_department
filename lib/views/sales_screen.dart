@@ -49,6 +49,8 @@ class _SalesScreenState extends State<SalesScreen> {
                         ),
                     ],
                     onChanged: (value) {
+                      _salesController.valueButtonUsers =
+                          int.parse(value.toString());
                       setState(() {});
                     },
                   ),
@@ -63,7 +65,9 @@ class _SalesScreenState extends State<SalesScreen> {
                   DropdownButton(
                     value: _salesController.valueButtonProducts,
                     items: [
-                      for (int i = 0; i < _salesController.dataProducts.length; i++)
+                      for (int i = 0;
+                          i < _salesController.dataProducts.length;
+                          i++)
                         DropdownMenuItem(
                           value: _salesController.dataProducts[i]["product_id"],
                           child: Text(
@@ -72,6 +76,8 @@ class _SalesScreenState extends State<SalesScreen> {
                         ),
                     ],
                     onChanged: (value) {
+                      _salesController.valueButtonProducts =
+                          int.parse(value.toString());
                       setState(() {});
                     },
                   ),
