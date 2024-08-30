@@ -81,6 +81,18 @@ class MySqFLiteDatabase extends CRUD {
     );
   }
 
+  //insert To sales Table
+  Future<bool> insertToSalesTable(
+      {required String userName, required String productName}) {
+    return insert(
+      tableName: _salesTable,
+      values: {
+        _salesColumnUserName:userName,
+        _salesColumnProductName:productName,
+      },
+    );
+  }
+
   /////////////////////////////////////////////// selects
 
   // main function select

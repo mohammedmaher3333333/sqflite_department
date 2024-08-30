@@ -83,6 +83,22 @@ class _SalesScreenState extends State<SalesScreen> {
                   ),
                 ],
               ),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {});
+                    },
+                    child: const Text("Refresh"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _salesController.insertToSalesTable();
+                    },
+                    child: const Text("Add"),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
